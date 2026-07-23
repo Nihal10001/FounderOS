@@ -1,7 +1,7 @@
 import json
 import re
 
-from .gemini import generate
+from .llm_router import generate_for
 
 CODEGEN_SYSTEM_PROMPT = """You are a code-generation engine. Given a product idea, generate a
 single-page React landing site.
@@ -30,9 +30,9 @@ def _extract_json(raw: str) -> str:
 
 
 async def generate_website(idea: str) -> dict[str, str]:
-    raw = await generate(CODEGEN_SYSTEM_PROMPT, f"Product idea: {idea}")
+    raw = await generate_for("codegen", CODEGEN_SYSTEM_PROMPT, f"Product idea: {idea}")
     try:
-        files = json.loads(_extract_json(raw))
+        files = json.loads(_extract_json(raw), strict=False)
     except json.JSONDecodeError as e:
         raise ValueError(f"Model did not return valid JSON: {e}\nRaw output: {raw[:500]}")
 

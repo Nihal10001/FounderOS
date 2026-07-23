@@ -1,4 +1,4 @@
-# AI Org Chart — Multi-Agent Startup Team
+# FounderOS — Multi-Agent Startup Team
 
 ## What this is
 A working multi-agent system: a founder describes a product idea, and Research,

@@ -5,7 +5,7 @@ from app.api.chat import router as chat_router
 from app.api.website import router as website_router
 from app.core.config import settings
 
-app = FastAPI(title="AI Org Chart — Multi-Agent Backend")
+app = FastAPI(title="FounderOS — Multi-Agent Backend")
 
 app.add_middleware(
     CORSMiddleware,

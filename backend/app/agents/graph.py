@@ -2,7 +2,7 @@ from langgraph.graph import StateGraph, START, END
 
 from .state import AgentState
 from .prompts import RESEARCH_PROMPT, MARKETING_PROMPT, FINANCE_PROMPT, MANAGER_PROMPT
-from ..services.gemini import generate
+from ..services.llm_router import generate_for
 
 MAX_REVISIONS = 1  # caps the Marketing<->Finance back-and-forth so the graph can't loop forever
 
@@ -21,7 +21,7 @@ def _append(state: AgentState, agent: str, display_name: str, content: str) -> l
 
 
 async def research_node(state: AgentState) -> dict:
-    content = await generate(RESEARCH_PROMPT, _build_transcript(state))
+    content = await generate_for("research_manager", RESEARCH_PROMPT, _build_transcript(state))
     return {
         "messages": _append(state, "research", "Research Agent", content),
         "round": state["round"] + 1,
@@ -29,7 +29,7 @@ async def research_node(state: AgentState) -> dict:
 
 
 async def marketing_node(state: AgentState) -> dict:
-    content = await generate(MARKETING_PROMPT, _build_transcript(state))
+    content = await generate_for("finance_marketing", MARKETING_PROMPT, _build_transcript(state))
     return {
         "messages": _append(state, "marketing", "Marketing Agent", content),
         "round": state["round"] + 1,
@@ -37,7 +37,7 @@ async def marketing_node(state: AgentState) -> dict:
 
 
 async def finance_node(state: AgentState) -> dict:
-    content = await generate(FINANCE_PROMPT, _build_transcript(state))
+    content = await generate_for("finance_marketing", FINANCE_PROMPT, _build_transcript(state))
     decision_lines = [l for l in content.splitlines() if l.strip().upper().startswith("DECISION:")]
     approved = bool(decision_lines) and "APPROVE" in decision_lines[-1].upper()
     return {
@@ -49,7 +49,7 @@ async def finance_node(state: AgentState) -> dict:
 
 
 async def manager_node(state: AgentState) -> dict:
-    content = await generate(MANAGER_PROMPT, _build_transcript(state))
+    content = await generate_for("research_manager", MANAGER_PROMPT, _build_transcript(state))
     return {
         "messages": _append(state, "manager", "Manager Agent", content),
         "finished": True,
@@ -117,7 +117,7 @@ async def run_workflow(
 
     initial_state: AgentState = {
         "session_id": session_id,
-        "messages": messages + [founder_turn],      
+        "messages": messages + [founder_turn],
         "round": next_round + 1,
         "revision_count": 0,
         "finance_approved": False,

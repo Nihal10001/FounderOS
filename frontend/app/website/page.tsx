@@ -32,7 +32,7 @@ export default function WebsiteBuilderPage() {
         <Link href="/" className="text-xs text-outline underline">
           ← Back to virtual team
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold text-on-surface">Idea → Website</h1>
+        <h1 className="mt-2 text-2xl font-semibold text-on-surface">FounderOS — Idea → Website</h1>
         <p className="mt-1 text-sm text-on-surface-variant">
           Describe your idea, get a live editable React landing page, and deploy it in one hop.
         </p>
