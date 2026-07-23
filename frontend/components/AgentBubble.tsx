@@ -4,12 +4,13 @@ import type { AgentTurn } from "@/lib/api";
 export function AgentBubble({ turn }: { turn: AgentTurn }) {
   const meta = AGENT_META[turn.agent as AgentKey];
   const isManager = turn.agent === "manager";
+  const isFounder = turn.agent === "founder";
 
   return (
     <div
       className={`rounded-md border-l-4 ${meta.border} bg-surface-container-low p-4 ${
         isManager ? "ring-1 ring-primary-container/50" : ""
-      }`}
+      } ${isFounder ? "ml-auto max-w-[85%] bg-surface-container-high" : ""}`}
     >
       <div className="mb-1 flex items-center justify-between">
         <span className="text-sm font-semibold" style={{ color: meta.color }}>

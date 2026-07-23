@@ -1,4 +1,4 @@
-from typing import TypedDict, List, Dict
+from typing import TypedDict, List
 
 
 class AgentMessage(TypedDict):
@@ -9,7 +9,6 @@ class AgentMessage(TypedDict):
 
 
 class AgentState(TypedDict):
-    user_request: str
     session_id: str
     messages: List[AgentMessage]
     round: int

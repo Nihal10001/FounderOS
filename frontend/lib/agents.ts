@@ -1,4 +1,10 @@
 export const AGENT_META = {
+  founder: {
+    label: "You",
+    color: "#dae2fd", // on-surface — neutral, distinct from agent colors
+    border: "border-outline-variant",
+    dot: "bg-outline",
+  },
   research: {
     label: "Research Agent",
     color: "#adc6ff", // primary — indigo

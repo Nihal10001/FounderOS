@@ -21,16 +21,30 @@ ai-org-chart/
 ├── backend/            FastAPI + LangGraph multi-agent orchestration
 │   └── app/
 │       ├── agents/     graph.py = the actual StateGraph, prompts.py = agent personas
-│       ├── api/        chat.py = /invoke endpoint
+│       ├── api/        chat.py = /invoke (agents), website.py = /generate + /deploy
 │       ├── core/       config.py, supabase.py
-│       ├── schemas/    request/response models (now includes AgentTurn)
-│       └── services/   gemini.py (real LLM calls), persistence.py (optional Supabase save)
+│       ├── schemas/    chat.py, website.py
+│       └── services/   gemini.py (LLM calls), persistence.py, codegen.py, github_deploy.py
 ├── frontend/            Next.js + Tailwind, tokens ported from DESIGN.md
-│   ├── app/            page.tsx = the live agent-conversation UI
-│   ├── components/      AgentBubble, AgentStatusBadge, ChatComposer
-│   └── lib/             api.ts (backend client), agents.ts (per-agent colors)
+│   ├── app/
+│   │   ├── page.tsx        the agent-team chat UI
+│   │   └── website/page.tsx  standalone "Idea → Website" builder
+│   ├── components/
+│   │   ├── (agent chat components)
+│   │   └── website/     IdeaForm, WebsitePreview (Sandpack), DeployPanel
+│   └── lib/             api.ts (agent client), website-api.ts (builder client)
 └── docs/DESIGN.md       original design reference
 ```
+
+## Two independent features
+
+1. **Virtual Startup Team** (`/`) — the multi-agent Research→Marketing→Finance→Manager
+   discussion, with follow-up support that continues the same transcript.
+2. **Idea → Website** (`/website`) — separate, standalone. Describe an idea, get a live
+   editable React site (Sandpack sandbox — real in-browser bundling, not a static iframe),
+   then optionally push it to a new GitHub repo and hand off to Vercel's own import flow
+   for the actual deploy (no OAuth built here — you paste a GitHub personal access token,
+   used once, never stored).
 
 ## Running it
 

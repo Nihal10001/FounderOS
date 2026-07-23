@@ -19,17 +19,20 @@ export default function Home() {
 
   async function handleSubmit(message: string) {
     setError(null);
-    setVisibleTurns([]);
     setLoading(true);
     setActiveAgent("research");
 
     try {
-      const result = await invokeAgents(message, sessionId);
+      // Send everything shown so far as history — the backend appends this
+      // message as a new "founder" turn and re-runs the loop grounded in the
+      // full prior discussion, rather than starting from scratch.
+      const result = await invokeAgents(message, sessionId, visibleTurns);
 
-      // Reveal turns sequentially for a "watch the team discuss it live" effect.
+      // Reveal only the newly-generated turns sequentially (founder turn +
+      // this round's agent turns), appended after everything already shown.
       for (let i = 0; i < result.turns.length; i++) {
         const turn = result.turns[i];
-        setActiveAgent(turn.agent as AgentKey);
+        if (turn.agent !== "founder") setActiveAgent(turn.agent as AgentKey);
         await new Promise((r) => setTimeout(r, REVEAL_DELAY_MS));
         setVisibleTurns((prev) => [...prev, turn]);
       }
@@ -44,7 +47,12 @@ export default function Home() {
   return (
     <main className="mx-auto flex min-h-screen max-w-3xl flex-col gap-6 px-6 py-10">
       <header>
-        <h1 className="text-2xl font-semibold text-on-surface">Your Virtual Startup Team</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-semibold text-on-surface">Your Virtual Startup Team</h1>
+          <a href="/website" className="text-xs text-primary underline">
+            Idea → Website →
+          </a>
+        </div>
         <p className="mt-1 text-sm text-on-surface-variant">
           Describe what you want to launch. Research, Marketing, Finance, and your Manager will
           work it out together — live.
@@ -57,7 +65,15 @@ export default function Home() {
         ))}
       </div>
 
-      <ChatComposer onSubmit={handleSubmit} disabled={loading} />
+      <ChatComposer
+        onSubmit={handleSubmit}
+        disabled={loading}
+        placeholder={
+          visibleTurns.length === 0
+            ? "I want to launch an AI fitness app..."
+            : "Ask the team to revise something, or add a new instruction..."
+        }
+      />
 
       {error && (
         <div className="rounded-md border border-error/40 bg-error-container/10 p-3 text-sm text-error">

@@ -8,7 +8,7 @@ MAX_REVISIONS = 1  # caps the Marketing<->Finance back-and-forth so the graph ca
 
 
 def _build_transcript(state: AgentState) -> str:
-    lines = [f"Founder's request: {state['user_request']}", ""]
+    lines = []
     for m in state["messages"]:
         lines.append(f"{m['display_name']}: {m['content']}")
     return "\n".join(lines)
@@ -21,8 +21,7 @@ def _append(state: AgentState, agent: str, display_name: str, content: str) -> l
 
 
 async def research_node(state: AgentState) -> dict:
-    context = f"Founder's request: {state['user_request']}"
-    content = await generate(RESEARCH_PROMPT, context)
+    content = await generate(RESEARCH_PROMPT, _build_transcript(state))
     return {
         "messages": _append(state, "research", "Research Agent", content),
         "round": state["round"] + 1,
@@ -94,12 +93,32 @@ def get_graph():
     return _compiled_graph
 
 
-async def run_workflow(user_request: str, session_id: str) -> AgentState:
+async def run_workflow(
+    instruction: str,
+    session_id: str,
+    previous_messages: list | None = None,
+) -> AgentState:
+    """
+    `previous_messages` lets a follow-up continue the same discussion instead of
+    starting fresh: the founder's new instruction is appended as a turn, and every
+    node reads the full transcript, so agents see everything said before.
+    Revision/approval flags reset each call so a follow-up round can trigger its
+    own Finance revision loop independently of the previous round's outcome.
+    """
+    messages = list(previous_messages or [])
+    next_round = (messages[-1]["round"] + 1) if messages else 0
+
+    founder_turn = {
+        "agent": "founder",
+        "display_name": "Founder",
+        "content": instruction,
+        "round": next_round,
+    }
+
     initial_state: AgentState = {
-        "user_request": user_request,
         "session_id": session_id,
-        "messages": [],
-        "round": 0,
+        "messages": messages + [founder_turn],      
+        "round": next_round + 1,
         "revision_count": 0,
         "finance_approved": False,
         "finished": False,

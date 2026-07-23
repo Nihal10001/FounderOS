@@ -2,39 +2,36 @@
 
 import { useState } from "react";
 
-export function ChatComposer({
-  onSubmit,
-  disabled,
-  placeholder = "I want to launch an AI fitness app...",
+export function IdeaForm({
+  onGenerate,
+  loading,
 }: {
-  onSubmit: (message: string) => void;
-  disabled: boolean;
-  placeholder?: string;
+  onGenerate: (idea: string) => void;
+  loading: boolean;
 }) {
-  const [value, setValue] = useState("");
+  const [idea, setIdea] = useState("");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!value.trim() || disabled) return;
-    onSubmit(value.trim());
-    setValue("");
+    if (!idea.trim() || loading) return;
+    onGenerate(idea.trim());
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-2">
       <input
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        disabled={disabled}
-        placeholder={placeholder}
+        value={idea}
+        onChange={(e) => setIdea(e.target.value)}
+        disabled={loading}
+        placeholder="A subscription box for rare houseplants..."
         className="flex-1 rounded-md border border-outline-variant bg-surface-container px-4 py-3 text-sm text-on-surface placeholder:text-outline focus:border-primary focus:outline-none disabled:opacity-50"
       />
       <button
         type="submit"
-        disabled={disabled || !value.trim()}
+        disabled={loading || !idea.trim()}
         className="rounded-md bg-primary-container px-5 py-3 text-sm font-medium text-on-primary disabled:opacity-40"
       >
-        {disabled ? "Working..." : "Send to team"}
+        {loading ? "Generating..." : "Build site"}
       </button>
     </form>
   );

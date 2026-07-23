@@ -1,4 +1,4 @@
-# --- Frontend (Next.js) ---
+# Frontend (Next.js)
 frontend/node_modules/
 frontend/.next/
 frontend/out/
@@ -6,13 +6,13 @@ frontend/.env.local
 frontend/*.tsbuildinfo
 frontend/next-env.d.ts
 
-# --- Backend (Python) ---
+# Backend (Python)
 backend/venv/
 backend/__pycache__/
 backend/**/__pycache__/
 backend/*.pyc
 backend/.env
 
-# --- General ---
+# General
 .DS_Store
 *.log
