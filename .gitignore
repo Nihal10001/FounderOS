@@ -5,6 +5,7 @@ frontend/out/
 frontend/.env.local
 frontend/*.tsbuildinfo
 frontend/next-env.d.ts
+frontend/.vercel
 
 # Backend (Python)
 backend/venv/
@@ -12,6 +13,7 @@ backend/__pycache__/
 backend/**/__pycache__/
 backend/*.pyc
 backend/.env
+backend/.vercel
 
 # General
 .DS_Store
